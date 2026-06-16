@@ -95,6 +95,46 @@
             Console.WriteLine($"Total Rooms : {rooms.Count}");
         }
 
+        static void RegisterGuest(List<Guest> guests)
+        {
+            Console.Write("Enter Guest Name: ");
+            string guestName = Console.ReadLine();
+
+            Console.Write("Enter Check-In Date: ");
+            string checkInDate = Console.ReadLine();
+
+            Console.Write("Enter Total Nights: ");
+            int totalNights = int.Parse(Console.ReadLine());
+
+            // Validate nights
+            if (totalNights <= 0)
+            {
+                Console.WriteLine("Number of nights must be greater than 0.");
+                return;
+            }
+
+            // Auto-generate Guest ID
+            string guestId = "G" + (guests.Count + 1).ToString("000");
+
+            Guest newGuest = new Guest
+            {
+                GuestId = guestId,
+                GuestName = guestName,
+                RoomNumber = "Not Assigned",
+                CheckInDate = checkInDate,
+                TotalNights = totalNights
+            };
+
+            guests.Add(newGuest);
+
+            Console.WriteLine("\nGuest Registered Successfully!");
+            Console.WriteLine($"Guest ID      : {newGuest.GuestId}");
+            Console.WriteLine($"Guest Name    : {newGuest.GuestName}");
+            Console.WriteLine($"Check-In Date : {newGuest.CheckInDate}");
+            Console.WriteLine($"Total Nights  : {newGuest.TotalNights}");
+            Console.WriteLine($"Room Number   : {newGuest.RoomNumber}");
+        }
+
         static void Main(string[] args)
         {
             List<Room> rooms = new List<Room>()
@@ -120,9 +160,9 @@
                         AddNewRoom(rooms);
                         break;
 
-                    //case 2: 
-                    //    CaseViewRooms(); 
-                    //    break;
+                    case 2:
+                        RegisterGuest(guests);
+                        break;
 
                     //case 3: 
                     //    CaseSearchAvailableRooms(); 
