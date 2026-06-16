@@ -148,15 +148,57 @@
             Console.WriteLine($"Room Number: {newGuest.RoomNumber}");
         }
 
+        //static void BookRoom(List<Room> rooms, List<Guest> guests)
+        //{
+        //    Console.Write("Enter Guest ID: ");
+        //    string guestId = Console.ReadLine();
+
+        //    Console.Write("Enter Room Number: ");
+        //    int roomNumber = int.Parse(Console.ReadLine());
+
+        //    // Find the guest
+        //    Guest guest = guests.FirstOrDefault(g => g.GuestId == guestId);
+
+        //    if (guest == null)
+        //    {
+        //        Console.WriteLine("Guest not found.");
+        //        return;
+        //    }
+
+        //    // Find the room
+        //    Room room = rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
+
+        //    if (room == null)
+        //    {
+        //        Console.WriteLine("Room not found.");
+        //        return;
+        //    }
+
+        //    // Check if room is available
+        //    if (!room.IsAvailable)
+        //    {
+        //        Console.WriteLine("Room is already booked.");
+        //        return;
+        //    }
+
+        //    // Update guest and room
+        //    guest.RoomNumber = room.RoomNumber.ToString();
+        //    room.IsAvailable = false;
+
+        //    // Display booking details
+        //    Console.WriteLine("\nBooking Successful!");
+        //    Console.WriteLine($"Guest Name    : {guest.GuestName}");
+        //    Console.WriteLine($"Room Number   : {room.RoomNumber}");
+        //    Console.WriteLine($"Room Type     : {room.RoomType}");
+        //    Console.WriteLine($"Price/Night   : OMR {room.PricePerNight:F2}");
+        //    Console.WriteLine($"Total Nights  : {guest.TotalNights}");
+        //    Console.WriteLine($"Total Cost    : OMR {guest.CalculateTotalCost(rooms):F2}");
+        //}
         static void BookRoom(List<Room> rooms, List<Guest> guests)
         {
             Console.Write("Enter Guest ID: ");
             string guestId = Console.ReadLine();
 
-            Console.Write("Enter Room Number: ");
-            int roomNumber = int.Parse(Console.ReadLine());
-
-            // Find the guest
             Guest guest = guests.FirstOrDefault(g => g.GuestId == guestId);
 
             if (guest == null)
@@ -165,7 +207,21 @@
                 return;
             }
 
-            // Find the room
+            Console.WriteLine("\nAvailable Rooms:");
+            foreach (Room r in rooms.Where(r => r.IsAvailable))
+            {
+                Console.WriteLine($"{r.RoomNumber} - {r.RoomType} - OMR {r.PricePerNight:F2}");
+            }
+
+            if (!rooms.Any(r => r.IsAvailable))
+            {
+                Console.WriteLine("No rooms available.");
+                return;
+            }
+
+            Console.Write("\nEnter Room Number: ");
+            int roomNumber = int.Parse(Console.ReadLine());
+
             Room room = rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
 
             if (room == null)
@@ -174,25 +230,22 @@
                 return;
             }
 
-            // Check if room is available
             if (!room.IsAvailable)
             {
                 Console.WriteLine("Room is already booked.");
                 return;
             }
 
-            // Update guest and room
             guest.RoomNumber = room.RoomNumber.ToString();
             room.IsAvailable = false;
 
-            // Display booking details
             Console.WriteLine("\nBooking Successful!");
-            Console.WriteLine($"Guest Name    : {guest.GuestName}");
-            Console.WriteLine($"Room Number   : {room.RoomNumber}");
-            Console.WriteLine($"Room Type     : {room.RoomType}");
-            Console.WriteLine($"Price/Night   : OMR {room.PricePerNight:F2}");
-            Console.WriteLine($"Total Nights  : {guest.TotalNights}");
-            Console.WriteLine($"Total Cost    : OMR {guest.CalculateTotalCost(rooms):F2}");
+            Console.WriteLine($"Guest Name: {guest.GuestName}");
+            Console.WriteLine($"Room Number: {room.RoomNumber}");
+            Console.WriteLine($"Room Type: {room.RoomType}");
+            Console.WriteLine($"Price/Night: OMR {room.PricePerNight:F2}");
+            Console.WriteLine($"Total Nights: {guest.TotalNights}");
+            Console.WriteLine($"Total Cost: OMR {guest.CalculateTotalCost(rooms):F2}");
         }
 
         static void Main(string[] args)
