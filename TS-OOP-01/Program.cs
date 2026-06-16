@@ -52,9 +52,60 @@
             Console.WriteLine("*******************************************");
         }
 
+        static void AddNewRoom(List<Room> rooms)
+        {
+            Console.Write("Enter Room Number: ");
+            int roomNumber = int.Parse(Console.ReadLine());
+
+            // Check if room already exists
+            if (rooms.Any(r => r.RoomNumber == roomNumber))
+            {
+                Console.WriteLine("Error: Room number already exists.");
+                return;
+            }
+
+            Console.Write("Enter Room Type (Single/Double/Suite): ");
+            string roomType = Console.ReadLine();
+
+            Console.Write("Enter Price Per Night: ");
+            double price = double.Parse(Console.ReadLine());
+
+            // Validate positive price
+            if (price <= 0)
+            {
+                Console.WriteLine("Price must be greater than 0.");
+                return;
+            }
+
+            Room newRoom = new Room
+            {
+                RoomNumber = roomNumber,
+                RoomType = roomType,
+                PricePerNight = price,
+                IsAvailable = true
+            };
+
+            rooms.Add(newRoom);
+
+            Console.WriteLine("\nRoom added successfully!");
+            Console.WriteLine($"Room Number : {newRoom.RoomNumber}");
+            Console.WriteLine($"Room Type   : {newRoom.RoomType}");
+            Console.WriteLine($"Price       : OMR {newRoom.PricePerNight:F2}");
+            Console.WriteLine($"Available   : {newRoom.IsAvailable}");
+            Console.WriteLine($"Total Rooms : {rooms.Count}");
+        }
+
         static void Main(string[] args)
         {
-            List<Room> rooms = new List<Room>();
+            List<Room> rooms = new List<Room>()
+            {
+            new Room { RoomNumber = 101, RoomType = "Single", PricePerNight = 25, IsAvailable = true },
+            new Room { RoomNumber = 102, RoomType = "Double", PricePerNight = 40, IsAvailable = true },
+            new Room { RoomNumber = 103, RoomType = "Suite", PricePerNight = 80, IsAvailable = true },
+            new Room { RoomNumber = 104, RoomType = "Single", PricePerNight = 30, IsAvailable = true },
+            new Room { RoomNumber = 105, RoomType = "Double", PricePerNight = 45, IsAvailable = true },
+            new Room { RoomNumber = 106, RoomType = "Suite", PricePerNight = 90, IsAvailable = true }
+        };
             List<Guest> guests = new List<Guest>();
             int choice;
             do
@@ -66,7 +117,7 @@
                 switch (choice)
                 {
                     case 1:
-                        CaseAddRoom();
+                        AddNewRoom(rooms);
                         break;
 
                     //case 2: 
