@@ -2,77 +2,38 @@
 {
     internal class Program
     {
-        public class Room
+        class Room
         {
-            // Properties
-            public int RoomId { get; set; }
-            public string RoomType { get; set; }   //  Single, Double, Suite
-            public double PricePerNight { get; set; }
-            public bool IsAvailable { get; set; }
-
-            // Constructor
-            public Room(int id, string type, double price, bool available = true)
-            {
-                RoomId = id;
-                RoomType = type;
-                PricePerNight = price;
-                IsAvailable = available;
-            }
-
-            // Methods
-            public void BookRoom()
-            {
-                if (IsAvailable)
-                {
-                    IsAvailable = false;
-                    Console.WriteLine("Room booked successfully.");
-                }
-                else
-                {
-                    Console.WriteLine("Room is already booked.");
-                }
-            }
-
-            public void ReleaseRoom()
-            {
-                IsAvailable = true;
-                Console.WriteLine("Room released and now available.");
-            }
+            public int RoomNumber;
+            public string RoomType;
+            public double PricePerNight;
+            public bool IsAvailable;
 
             public void DisplayRoom()
             {
-                string status = IsAvailable ? "Available" : "Booked";
-                Console.WriteLine($"Room {RoomId} | {RoomType} | {PricePerNight} OMR | {status}");
+                Console.WriteLine($"{RoomNumber} | {RoomType} | OMR {PricePerNight:F2} | {(IsAvailable ? "Available" : "Booked")}");
             }
         }
+        class Guest
+        {
+            public string GuestId;
+            public string GuestName;
+            public string RoomNumber = "Not Assigned";
+            public string CheckInDate;
+            public int TotalNights;
 
-        //    public void BookRoom()
-        //    {
-        //        if (IsAvailable)
-        //        {
-        //            IsAvailable = false;
-        //            Console.WriteLine($"Room {RoomId} booked successfully.");
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine($"Room {RoomId} is already booked.");
-        //        }
-        //    }
+            public double CalculateTotalCost(List<Room> rooms)
+            {
+                var room = rooms.FirstOrDefault(r => r.RoomNumber.ToString() == RoomNumber);
+                if (room == null)
+                {
+                    return 0;
+                }
 
-        //    public void ReleaseRoom()
-        //    {
-        //        IsAvailable = true;
-        //        Console.WriteLine($"Room {RoomId} is now available.");
-        //    }
-
-        //    public override string ToString()
-        //    {
-        //        string status = IsAvailable ? "Available" : "Booked";
-        //        return $"Room {RoomId} | Type: {RoomType} | Price: {PricePerNight} | Status: {status}";
-        //    }
-        //}
-
-          static void ShowMainMenu()
+                return room.PricePerNight * TotalNights;
+            }
+        }
+        static void ShowMainMenu()
         {
             Console.WriteLine("*******************************************");
             Console.WriteLine("=== HOTEL MANAGEMENT SYSTEM ===");
@@ -93,6 +54,8 @@
 
         static void Main(string[] args)
         {
+            List<Room> rooms = new List<Room>();
+            List<Guest> guests = new List<Guest>();
             int choice;
             do
             {
@@ -102,9 +65,9 @@
 
                 switch (choice)
                 {
-                    //case 1: 
-                    //    CaseAddRoom(); 
-                    //    break;
+                    case 1:
+                        CaseAddRoom();
+                        break;
 
                     //case 2: 
                     //    CaseViewRooms(); 
