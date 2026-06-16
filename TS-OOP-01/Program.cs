@@ -262,6 +262,28 @@
 
             }
         }
+        static void ShowStatistics(List<Room> rooms, List<Guest> guests)
+        {
+            Console.WriteLine($"Total Guests: {guests.Count()}");
+            Console.WriteLine($"Guests With Bookings: {guests.Count(g => g.RoomNumber != "Not Assigned")}");
+            Console.WriteLine($"Booked Rooms: {rooms.Count(r => !r.IsAvailable)}");
+
+            if (guests.Any(g => g.RoomNumber != "Not Assigned"))
+            {
+                Console.WriteLine($"Average Stay: {guests.Where(g => g.RoomNumber != "Not Assigned").Average(g => g.TotalNights):F2} nights");
+
+                Console.WriteLine("\nTop 3 Highest Paying Guests:");
+                foreach (Guest g in guests.Where(g => g.RoomNumber != "Not Assigned").OrderByDescending(g => g.CalculateTotalCost(rooms)).Take(3))
+                    Console.WriteLine($"{g.GuestName} - OMR {g.CalculateTotalCost(rooms):F2}");
+
+                Console.WriteLine("\nGuest Summaries:");
+                foreach (string s in guests.Where(g => g.RoomNumber != "Not Assigned").Select(g => $"{g.GuestName} | Room {g.RoomNumber} | {g.TotalNights} nights"))
+                    Console.WriteLine(s);
+            }
+            else
+                Console.WriteLine("No bookings available.");
+
+        }
             static void Main(string[] args)
             {
                 List<Room> rooms = new List<Room>()
@@ -301,19 +323,19 @@
                             SearchRooms(rooms);
                             break;
 
-                        //case 5: 
-                        //    CaseReleaseRoom(); 
-                        //    break;
+                    case 5:
+                        ShowStatistics(rooms, guests);
+                        break;
 
-                        //case 6: 
-                        //    CaseFilterCheapRooms(); 
-                        //    break;
+                    //case 6: 
+                    //    CaseFilterCheapRooms(); 
+                    //    break;
 
-                        //case 7: 
-                        //    CaseSortRooms(); 
-                        //    break;
+                    //case 7: 
+                    //    CaseSortRooms(); 
+                    //    break;
 
-                        case 0:
+                    case 0:
                             Console.WriteLine("Exiting system...");
                             break;
 
@@ -327,7 +349,7 @@
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadKey();
                         Console.Clear();
-                    }
+                    }                                            
 
                 } while (choice != 0);
             }
