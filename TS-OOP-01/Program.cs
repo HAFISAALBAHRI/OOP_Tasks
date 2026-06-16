@@ -147,53 +147,6 @@
             Console.WriteLine($"Total Nights: {newGuest.TotalNights}");
             Console.WriteLine($"Room Number: {newGuest.RoomNumber}");
         }
-
-        //static void BookRoom(List<Room> rooms, List<Guest> guests)
-        //{
-        //    Console.Write("Enter Guest ID: ");
-        //    string guestId = Console.ReadLine();
-
-        //    Console.Write("Enter Room Number: ");
-        //    int roomNumber = int.Parse(Console.ReadLine());
-
-        //    // Find the guest
-        //    Guest guest = guests.FirstOrDefault(g => g.GuestId == guestId);
-
-        //    if (guest == null)
-        //    {
-        //        Console.WriteLine("Guest not found.");
-        //        return;
-        //    }
-
-        //    // Find the room
-        //    Room room = rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
-
-        //    if (room == null)
-        //    {
-        //        Console.WriteLine("Room not found.");
-        //        return;
-        //    }
-
-        //    // Check if room is available
-        //    if (!room.IsAvailable)
-        //    {
-        //        Console.WriteLine("Room is already booked.");
-        //        return;
-        //    }
-
-        //    // Update guest and room
-        //    guest.RoomNumber = room.RoomNumber.ToString();
-        //    room.IsAvailable = false;
-
-        //    // Display booking details
-        //    Console.WriteLine("\nBooking Successful!");
-        //    Console.WriteLine($"Guest Name    : {guest.GuestName}");
-        //    Console.WriteLine($"Room Number   : {room.RoomNumber}");
-        //    Console.WriteLine($"Room Type     : {room.RoomType}");
-        //    Console.WriteLine($"Price/Night   : OMR {room.PricePerNight:F2}");
-        //    Console.WriteLine($"Total Nights  : {guest.TotalNights}");
-        //    Console.WriteLine($"Total Cost    : OMR {guest.CalculateTotalCost(rooms):F2}");
-        //}
         static void BookRoom(List<Room> rooms, List<Guest> guests)
         {
             Console.Write("Enter Guest ID: ");
@@ -247,10 +200,71 @@
             Console.WriteLine($"Total Nights: {guest.TotalNights}");
             Console.WriteLine($"Total Cost: OMR {guest.CalculateTotalCost(rooms):F2}");
         }
-
-        static void Main(string[] args)
+        static void SearchRooms(List<Room> rooms)
         {
-            List<Room> rooms = new List<Room>()
+            bool exit = false;
+            while (exit == false)
+            {
+                Console.WriteLine("************Search Rooms**********");
+                Console.WriteLine("1.Available Rooms");
+                Console.WriteLine("2.Filter by Type");
+                Console.WriteLine("3.Filter by Price");
+                Console.WriteLine("4.Room Statistics");
+                Console.WriteLine("0.Back");
+                Console.Write("Choice: ");
+                string option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        foreach (Room r in rooms.Where(r => r.IsAvailable).OrderBy(r => r.PricePerNight))
+                            r.DisplayRoom();
+                        break;
+
+                    case "2":
+                        Console.Write("Enter Type: ");
+                        string type = Console.ReadLine();
+
+                        foreach (Room r in rooms.Where(r => r.RoomType.Equals(type, StringComparison.OrdinalIgnoreCase)))
+                            r.DisplayRoom();
+                        break;
+
+                    case "3":
+                        Console.Write("Enter Maximum Price: ");
+                        double maxPrice = double.Parse(Console.ReadLine());
+
+                        foreach (Room r in rooms.Where(r => r.IsAvailable && r.PricePerNight <= maxPrice)
+                                               .OrderBy(r => r.PricePerNight))
+                            r.DisplayRoom();
+                        break;
+
+                    case "4":
+                        Console.WriteLine($"Total Rooms: {rooms.Count()}");
+                        Console.WriteLine($"Available Rooms: {rooms.Count(r => r.IsAvailable)}");
+                        Console.WriteLine($"Average Price: OMR {rooms.Average(r => r.PricePerNight):F2}");
+                        Console.WriteLine($"Lowest Price: OMR {rooms.Min(r => r.PricePerNight):F2}");
+                        Console.WriteLine($"Highest Price: OMR {rooms.Max(r => r.PricePerNight):F2}");
+                        break;
+                    case "0":
+                        exit=true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
+                if (exit == false)
+                {
+                    Console.WriteLine(" Press any key to continue...");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+
+            }
+        }
+            static void Main(string[] args)
+            {
+                List<Room> rooms = new List<Room>()
             {
             new Room { RoomNumber = 101, RoomType = "Single", PricePerNight = 25, IsAvailable = true },
             new Room { RoomNumber = 102, RoomType = "Double", PricePerNight = 40, IsAvailable = true },
@@ -259,63 +273,64 @@
             new Room { RoomNumber = 105, RoomType = "Double", PricePerNight = 45, IsAvailable = true },
             new Room { RoomNumber = 106, RoomType = "Suite", PricePerNight = 90, IsAvailable = true }
         };
-            
 
-            List<Guest> guests = new List<Guest>();
-            int choice;
-            do
-            {
-                ShowMainMenu();
-                Console.Write("Enter choice: ");
-                if (!int.TryParse(Console.ReadLine(), out choice)) choice = -1;
 
-                switch (choice)
+                List<Guest> guests = new List<Guest>();
+                int choice;
+                do
                 {
-                    case 1:
-                        AddNewRoom(rooms);
-                        break;
+                    ShowMainMenu();
+                    Console.Write("Enter choice: ");
+                    if (!int.TryParse(Console.ReadLine(), out choice)) choice = -1;
 
-                    case 2:
-                        RegisterGuest(guests);
-                        break;
+                    switch (choice)
+                    {
+                        case 1:
+                            AddNewRoom(rooms);
+                            break;
 
-                    case 3:
-                        BookRoom(rooms, guests);
-                        break;
+                        case 2:
+                            RegisterGuest(guests);
+                            break;
 
-                    //case 4: 
-                    //    CaseBookRoom(); 
-                    //    break;
+                        case 3:
+                            BookRoom(rooms, guests);
+                            break;
 
-                    //case 5: 
-                    //    CaseReleaseRoom(); 
-                    //    break;
+                        case 4:
+                            SearchRooms(rooms);
+                            break;
 
-                    //case 6: 
-                    //    CaseFilterCheapRooms(); 
-                    //    break;
+                        //case 5: 
+                        //    CaseReleaseRoom(); 
+                        //    break;
 
-                    //case 7: 
-                    //    CaseSortRooms(); 
-                    //    break;
+                        //case 6: 
+                        //    CaseFilterCheapRooms(); 
+                        //    break;
 
-                    case 0: 
-                        Console.WriteLine("Exiting system..."); 
-                        break;
+                        //case 7: 
+                        //    CaseSortRooms(); 
+                        //    break;
 
-                    default: 
-                        Console.WriteLine("Invalid choice."); 
-                        break;
-                }
+                        case 0:
+                            Console.WriteLine("Exiting system...");
+                            break;
 
-                if (choice != 0)
-                {
-                    Console.WriteLine("Press any key to continue...");
-                    Console.ReadKey();
-                    Console.Clear();
-                }
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            break;
+                    }
 
-            } while (choice != 0);
+                    if (choice != 0)
+                    {
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadKey();
+                        Console.Clear();
+                    }
+
+                } while (choice != 0);
+            }
         }
-    }
+    
 }
