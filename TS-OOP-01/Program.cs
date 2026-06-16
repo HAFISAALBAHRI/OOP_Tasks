@@ -57,82 +57,142 @@
             Console.Write("Enter Room Number: ");
             int roomNumber = int.Parse(Console.ReadLine());
 
-            // Check if room already exists
             if (rooms.Any(r => r.RoomNumber == roomNumber))
             {
                 Console.WriteLine("Error: Room number already exists.");
                 return;
             }
 
-            Console.Write("Enter Room Type (Single/Double/Suite): ");
-            string roomType = Console.ReadLine();
+            List<string> roomTypes = new List<string> { "Single", "Double", "Suite" };
+            string roomType;
+
+            do
+            {
+                Console.Write("Enter Room Type (Single/Double/Suite): ");
+                roomType = Console.ReadLine();
+
+                if (!roomTypes.Any(r => r.Equals(roomType, StringComparison.OrdinalIgnoreCase)))
+                    Console.WriteLine("Invalid room type.");
+            }
+            while (!roomTypes.Any(r => r.Equals(roomType, StringComparison.OrdinalIgnoreCase)));
+
+            roomType = roomTypes.First(r => r.Equals(roomType, StringComparison.OrdinalIgnoreCase));
 
             Console.Write("Enter Price Per Night: ");
             double price = double.Parse(Console.ReadLine());
 
-            // Validate positive price
             if (price <= 0)
             {
                 Console.WriteLine("Price must be greater than 0.");
                 return;
             }
 
-            Room newRoom = new Room
+            rooms.Add(new Room
             {
                 RoomNumber = roomNumber,
                 RoomType = roomType,
                 PricePerNight = price,
                 IsAvailable = true
-            };
-
-            rooms.Add(newRoom);
+            });
 
             Console.WriteLine("\nRoom added successfully!");
-            Console.WriteLine($"Room Number : {newRoom.RoomNumber}");
-            Console.WriteLine($"Room Type   : {newRoom.RoomType}");
-            Console.WriteLine($"Price       : OMR {newRoom.PricePerNight:F2}");
-            Console.WriteLine($"Available   : {newRoom.IsAvailable}");
-            Console.WriteLine($"Total Rooms : {rooms.Count}");
+            Console.WriteLine($"Room Number: {roomNumber}");
+            Console.WriteLine($"Room Type: {roomType}");
+            Console.WriteLine($"Price: OMR {price:F2}");
+            Console.WriteLine($"Total Rooms: {rooms.Count}");
         }
-
         static void RegisterGuest(List<Guest> guests)
         {
             Console.Write("Enter Guest Name: ");
             string guestName = Console.ReadLine();
 
-            Console.Write("Enter Check-In Date: ");
-            string checkInDate = Console.ReadLine();
+            string checkInDate;
+            DateTime date;
+            do
+            {
+                Console.Write("Enter Check-In Date (dd/MM/yyyy): ");
+                checkInDate = Console.ReadLine();
+
+                if (!DateTime.TryParseExact(checkInDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out date))
+                    Console.WriteLine("Invalid date format.");
+            }
+            while (!DateTime.TryParseExact(checkInDate, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out date));
 
             Console.Write("Enter Total Nights: ");
             int totalNights = int.Parse(Console.ReadLine());
 
-            // Validate nights
             if (totalNights <= 0)
             {
                 Console.WriteLine("Number of nights must be greater than 0.");
                 return;
             }
 
-            // Auto-generate Guest ID
             string guestId = "G" + (guests.Count + 1).ToString("000");
 
-            Guest newGuest = new Guest
+            guests.Add(new Guest
             {
                 GuestId = guestId,
                 GuestName = guestName,
                 RoomNumber = "Not Assigned",
                 CheckInDate = checkInDate,
                 TotalNights = totalNights
-            };
+            });
 
-            guests.Add(newGuest);
+            Guest newGuest = guests.Last();
 
             Console.WriteLine("\nGuest Registered Successfully!");
-            Console.WriteLine($"Guest ID      : {newGuest.GuestId}");
-            Console.WriteLine($"Guest Name    : {newGuest.GuestName}");
-            Console.WriteLine($"Check-In Date : {newGuest.CheckInDate}");
-            Console.WriteLine($"Total Nights  : {newGuest.TotalNights}");
-            Console.WriteLine($"Room Number   : {newGuest.RoomNumber}");
+            Console.WriteLine($"Guest ID: {newGuest.GuestId}");
+            Console.WriteLine($"Guest Name: {newGuest.GuestName}");
+            Console.WriteLine($"Check-In Date: {newGuest.CheckInDate}");
+            Console.WriteLine($"Total Nights: {newGuest.TotalNights}");
+            Console.WriteLine($"Room Number: {newGuest.RoomNumber}");
+        }
+
+        static void BookRoom(List<Room> rooms, List<Guest> guests)
+        {
+            Console.Write("Enter Guest ID: ");
+            string guestId = Console.ReadLine();
+
+            Console.Write("Enter Room Number: ");
+            int roomNumber = int.Parse(Console.ReadLine());
+
+            // Find the guest
+            Guest guest = guests.FirstOrDefault(g => g.GuestId == guestId);
+
+            if (guest == null)
+            {
+                Console.WriteLine("Guest not found.");
+                return;
+            }
+
+            // Find the room
+            Room room = rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
+
+            if (room == null)
+            {
+                Console.WriteLine("Room not found.");
+                return;
+            }
+
+            // Check if room is available
+            if (!room.IsAvailable)
+            {
+                Console.WriteLine("Room is already booked.");
+                return;
+            }
+
+            // Update guest and room
+            guest.RoomNumber = room.RoomNumber.ToString();
+            room.IsAvailable = false;
+
+            // Display booking details
+            Console.WriteLine("\nBooking Successful!");
+            Console.WriteLine($"Guest Name    : {guest.GuestName}");
+            Console.WriteLine($"Room Number   : {room.RoomNumber}");
+            Console.WriteLine($"Room Type     : {room.RoomType}");
+            Console.WriteLine($"Price/Night   : OMR {room.PricePerNight:F2}");
+            Console.WriteLine($"Total Nights  : {guest.TotalNights}");
+            Console.WriteLine($"Total Cost    : OMR {guest.CalculateTotalCost(rooms):F2}");
         }
 
         static void Main(string[] args)
@@ -146,6 +206,8 @@
             new Room { RoomNumber = 105, RoomType = "Double", PricePerNight = 45, IsAvailable = true },
             new Room { RoomNumber = 106, RoomType = "Suite", PricePerNight = 90, IsAvailable = true }
         };
+            
+
             List<Guest> guests = new List<Guest>();
             int choice;
             do
@@ -164,9 +226,9 @@
                         RegisterGuest(guests);
                         break;
 
-                    //case 3: 
-                    //    CaseSearchAvailableRooms(); 
-                    //    break;
+                    case 3:
+                        BookRoom(rooms, guests);
+                        break;
 
                     //case 4: 
                     //    CaseBookRoom(); 
@@ -182,18 +244,6 @@
 
                     //case 7: 
                     //    CaseSortRooms(); 
-                    //    break;
-
-                    //case 8: 
-                    //    CaseCountAndAverage(); 
-                    //    break;
-
-                    //case 9: 
-                    //    CaseRemoveRoom(); 
-                    //    break;
-
-                    //case 10: 
-                    //    CaseLinqChaining(); 
                     //    break;
 
                     case 0: 
